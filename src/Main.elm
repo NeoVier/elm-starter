@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Events
 import Browser.Navigation as Nav
 import Element exposing (Element)
 import Html exposing (Html)
@@ -22,16 +23,24 @@ type Page
 
 
 type alias Model =
-    { navKey : Nav.Key, currPage : Page }
+    { navKey : Nav.Key, currPage : Page, device : Element.Device }
+
+
+type alias Dimmensions =
+    { width : Int, height : Int }
 
 
 type alias Flags =
-    {}
+    Dimmensions
 
 
 init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    changeRouteTo (Route.fromUrl url) { navKey = navKey, currPage = NotFound }
+    changeRouteTo (Route.fromUrl url)
+        { navKey = navKey
+        , currPage = NotFound
+        , device = Element.classifyDevice flags
+        }
 
 
 
@@ -41,6 +50,7 @@ init flags url navKey =
 type Msg
     = ChangedUrl Url.Url
     | RequestedUrl Browser.UrlRequest
+    | Resized Dimmensions
     | GotHomeMsg PHome.Msg
     | GotAboutMsg PAbout.Msg
 
@@ -79,6 +89,9 @@ update msg model =
                 Browser.External href ->
                     ( model, Nav.load href )
 
+        ( Resized dimm, _ ) ->
+            ( { model | device = Element.classifyDevice dimm }, Cmd.none )
+
         ( GotHomeMsg subMsg, Home subModel ) ->
             PHome.update subMsg subModel
                 |> updateWith model Home GotHomeMsg
@@ -109,7 +122,7 @@ updateWith model toPage toMsg ( subModel, subCmd ) =
 -- VIEW
 
 
-viewPage : Browser.Document a -> (a -> Msg) -> Browser.Document Msg
+viewPage : Browser.Document subMsg -> (subMsg -> Msg) -> Browser.Document Msg
 viewPage page toMsg =
     { title = page.title
     , body =
@@ -131,7 +144,7 @@ view model =
             viewStaticPage { title = "Not Found", body = PNotFound.view }
 
         Home subModel ->
-            viewPage (PHome.view subModel) GotHomeMsg
+            viewPage (PHome.view subModel model.device) GotHomeMsg
 
         About subModel ->
             viewPage (PAbout.view subModel) GotAboutMsg
@@ -143,7 +156,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Browser.Events.onResize (\w h -> Resized { width = w, height = h })
 
 
 

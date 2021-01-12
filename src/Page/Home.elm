@@ -46,8 +46,8 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
-view model =
+view : Model -> Element.Device -> Browser.Document Msg
+view model device =
     { title = "Home"
     , body =
         [ Element.layout [] <|
@@ -59,6 +59,13 @@ view model =
                     , Input.button [] { onPress = Just Increment, label = Element.text "+" }
                     ]
                 , Route.linkToRoute [] { route = Route.About, label = Element.text "Go to about" }
+                , Element.text <|
+                    case device.orientation of
+                        Element.Portrait ->
+                            "Portrait mode"
+
+                        Element.Landscape ->
+                            "Landscape mode"
                 ]
         ]
     }
