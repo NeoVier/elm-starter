@@ -120,7 +120,7 @@ viewPage page toMsg =
 viewStaticPage : { title : String, body : Element msg } -> Browser.Document msg
 viewStaticPage { title, body } =
     { title = title
-    , body = [ Element.layoutWith { options = [ Element.noStaticStyleSheet ] } [] body ]
+    , body = [ Element.layout [] body ]
     }
 
 

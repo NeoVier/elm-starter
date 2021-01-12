@@ -50,7 +50,7 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Home"
     , body =
-        [ Element.layoutWith { options = [ Element.noStaticStyleSheet ] } [] <|
+        [ Element.layout [] <|
             Element.column []
                 [ Element.text "homepage"
                 , Element.row []
