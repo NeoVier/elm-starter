@@ -142,10 +142,17 @@ viewPage activeRoute page toMsg =
     }
 
 
-viewStaticPage : { title : String, body : Element msg } -> Browser.Document msg
-viewStaticPage { title, body } =
-    { title = title
-    , body = [ Element.layout [] body ]
+viewStaticPage :
+    Maybe Route
+    -> { title : String, body : List (Element msg) }
+    -> Browser.Document msg
+viewStaticPage activeRoute page =
+    let
+        layoutView =
+            Layout.view activeRoute { title = page.title, body = page.body }
+    in
+    { title = layoutView.title
+    , body = [ layoutView.body ]
     }
 
 
@@ -153,7 +160,7 @@ view : Model -> Browser.Document Msg
 view model =
     case model.currPage of
         NotFound ->
-            viewStaticPage { title = "Not Found", body = Page.NotFound.view }
+            viewStaticPage Nothing { title = "Not Found", body = [ Page.NotFound.view ] }
 
         Home subModel ->
             viewPage (Just Route.Home) (Page.Home.view subModel model.device) GotHomeMsg
