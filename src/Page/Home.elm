@@ -209,13 +209,3 @@ deviceOrientationToString orientation =
 
         Element.Landscape ->
             "landscape"
-
-
-
--- , Element.text <|
---     case device.orientation of
---         Element.Portrait ->
---             "Portrait mode"
---         Element.Landscape ->
---             "Landscape mode"
--- ]
