@@ -2,7 +2,7 @@ module Page.Home exposing (Model, Msg(..), init, update, view)
 
 import Browser
 import Element exposing (Element)
-import Element.Input as Input
+import Element.Input
 import Route
 
 
@@ -54,9 +54,15 @@ view model device =
             Element.column []
                 [ Element.text "homepage"
                 , Element.row []
-                    [ Input.button [] { onPress = Just Decrement, label = Element.text "-" }
+                    [ Element.Input.button []
+                        { onPress = Just Decrement
+                        , label = Element.text "-"
+                        }
                     , Element.text <| String.fromInt model.counter
-                    , Input.button [] { onPress = Just Increment, label = Element.text "+" }
+                    , Element.Input.button []
+                        { onPress = Just Increment
+                        , label = Element.text "+"
+                        }
                     ]
                 , Route.linkToRoute [] { route = Route.About, label = Element.text "Go to about" }
                 , Element.text <|

@@ -5,9 +5,9 @@ import Browser.Events
 import Browser.Navigation as Nav
 import Element exposing (Element)
 import Html exposing (Html)
-import Page.About as PAbout
-import Page.Home as PHome
-import Page.NotFound as PNotFound
+import Page.About
+import Page.Home
+import Page.NotFound
 import Route exposing (Route)
 import Url
 
@@ -17,8 +17,8 @@ import Url
 
 
 type Page
-    = Home PHome.Model
-    | About PAbout.Model
+    = Home Page.Home.Model
+    | About Page.About.Model
     | NotFound
 
 
@@ -51,8 +51,8 @@ type Msg
     = ChangedUrl Url.Url
     | RequestedUrl Browser.UrlRequest
     | Resized Dimmensions
-    | GotHomeMsg PHome.Msg
-    | GotAboutMsg PAbout.Msg
+    | GotHomeMsg Page.Home.Msg
+    | GotAboutMsg Page.About.Msg
 
 
 
@@ -93,11 +93,11 @@ update msg model =
             ( { model | device = Element.classifyDevice dimm }, Cmd.none )
 
         ( GotHomeMsg subMsg, Home subModel ) ->
-            PHome.update subMsg subModel
+            Page.Home.update subMsg subModel
                 |> updateWith model Home GotHomeMsg
 
         ( GotAboutMsg subMsg, About subModel ) ->
-            PAbout.update subMsg subModel
+            Page.About.update subMsg subModel
                 |> updateWith model About GotAboutMsg
 
         -- Invalid messages
@@ -141,13 +141,13 @@ view : Model -> Browser.Document Msg
 view model =
     case model.currPage of
         NotFound ->
-            viewStaticPage { title = "Not Found", body = PNotFound.view }
+            viewStaticPage { title = "Not Found", body = Page.NotFound.view }
 
         Home subModel ->
-            viewPage (PHome.view subModel model.device) GotHomeMsg
+            viewPage (Page.Home.view subModel model.device) GotHomeMsg
 
         About subModel ->
-            viewPage (PAbout.view subModel) GotAboutMsg
+            viewPage (Page.About.view subModel) GotAboutMsg
 
 
 
@@ -170,9 +170,9 @@ changeRouteTo maybeRoute model =
             ( { model | currPage = NotFound }, Cmd.none )
 
         Just Route.Home ->
-            PHome.init
+            Page.Home.init
                 |> updateWith model Home GotHomeMsg
 
         Just Route.About ->
-            PAbout.init
+            Page.About.init
                 |> updateWith model About GotAboutMsg
