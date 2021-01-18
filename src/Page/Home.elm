@@ -46,32 +46,31 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Element.Device -> Browser.Document Msg
+view : Model -> Element.Device -> { title : String, body : List (Element Msg) }
 view model device =
     { title = "Home"
     , body =
-        [ Element.layout [] <|
-            Element.column []
-                [ Element.text "homepage"
-                , Element.row []
-                    [ Element.Input.button []
-                        { onPress = Just Decrement
-                        , label = Element.text "-"
-                        }
-                    , Element.text <| String.fromInt model.counter
-                    , Element.Input.button []
-                        { onPress = Just Increment
-                        , label = Element.text "+"
-                        }
-                    ]
-                , Route.linkToRoute [] { route = Route.About, label = Element.text "Go to about" }
-                , Element.text <|
-                    case device.orientation of
-                        Element.Portrait ->
-                            "Portrait mode"
-
-                        Element.Landscape ->
-                            "Landscape mode"
+        [ Element.column []
+            [ Element.text "homepage"
+            , Element.row []
+                [ Element.Input.button []
+                    { onPress = Just Decrement
+                    , label = Element.text "-"
+                    }
+                , Element.text <| String.fromInt model.counter
+                , Element.Input.button []
+                    { onPress = Just Increment
+                    , label = Element.text "+"
+                    }
                 ]
+            , Route.linkToRoute [] { route = Route.About, label = Element.text "Go to about" }
+            , Element.text <|
+                case device.orientation of
+                    Element.Portrait ->
+                        "Portrait mode"
+
+                    Element.Landscape ->
+                        "Landscape mode"
+            ]
         ]
     }

@@ -5,6 +5,7 @@ import Browser.Events
 import Browser.Navigation as Nav
 import Element exposing (Element)
 import Html exposing (Html)
+import Layout
 import Page.About
 import Page.Home
 import Page.NotFound
@@ -122,11 +123,22 @@ updateWith model toPage toMsg ( subModel, subCmd ) =
 -- VIEW
 
 
-viewPage : Browser.Document subMsg -> (subMsg -> Msg) -> Browser.Document Msg
-viewPage page toMsg =
-    { title = page.title
-    , body =
-        List.map (Html.map toMsg) page.body
+viewPage :
+    Maybe Route
+    -> { title : String, body : List (Element subMsg) }
+    -> (subMsg -> Msg)
+    -> Browser.Document Msg
+viewPage activeRoute page toMsg =
+    let
+        layoutView =
+            Layout.view
+                activeRoute
+                { title = page.title
+                , body = page.body
+                }
+    in
+    { title = layoutView.title
+    , body = [ layoutView.body |> Html.map toMsg ]
     }
 
 
@@ -144,10 +156,10 @@ view model =
             viewStaticPage { title = "Not Found", body = Page.NotFound.view }
 
         Home subModel ->
-            viewPage (Page.Home.view subModel model.device) GotHomeMsg
+            viewPage (Just Route.Home) (Page.Home.view subModel model.device) GotHomeMsg
 
         About subModel ->
-            viewPage (Page.About.view subModel) GotAboutMsg
+            viewPage (Just Route.About) (Page.About.view subModel) GotAboutMsg
 
 
 
@@ -176,3 +188,16 @@ changeRouteTo maybeRoute model =
         Just Route.About ->
             Page.About.init
                 |> updateWith model About GotAboutMsg
+
+
+pageToRoute : Page -> Maybe Route
+pageToRoute page =
+    case page of
+        Home _ ->
+            Just Route.Home
+
+        About _ ->
+            Just Route.About
+
+        NotFound ->
+            Nothing

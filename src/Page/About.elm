@@ -46,25 +46,24 @@ update msg model =
 -- VIEW
 
 
-view : Model -> Browser.Document Msg
+view : Model -> { title : String, body : List (Element Msg) }
 view model =
     { title = "About"
     , body =
-        [ Element.layout [] <|
-            Element.column []
-                [ Element.text "about page"
-                , Element.row []
-                    [ Element.Input.button []
-                        { onPress = Just Decrement
-                        , label = Element.text "-"
-                        }
-                    , Element.text <| String.fromInt model.counter
-                    , Element.Input.button []
-                        { onPress = Just Increment
-                        , label = Element.text "+"
-                        }
-                    ]
-                , Route.linkToRoute [] { route = Route.Home, label = Element.text "Go to home" }
+        [ Element.column []
+            [ Element.text "about page"
+            , Element.row []
+                [ Element.Input.button []
+                    { onPress = Just Decrement
+                    , label = Element.text "-"
+                    }
+                , Element.text <| String.fromInt model.counter
+                , Element.Input.button []
+                    { onPress = Just Increment
+                    , label = Element.text "+"
+                    }
                 ]
+            , Route.linkToRoute [] { route = Route.Home, label = Element.text "Go to home" }
+            ]
         ]
     }
