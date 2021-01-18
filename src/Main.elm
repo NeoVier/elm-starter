@@ -4,7 +4,7 @@ import Browser
 import Browser.Events
 import Browser.Navigation as Nav
 import Element exposing (Element)
-import Html exposing (Html)
+import Html
 import Layout
 import Page.About
 import Page.Home
@@ -174,7 +174,7 @@ view model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Browser.Events.onResize (\w h -> Resized { width = w, height = h })
 
 
@@ -195,16 +195,3 @@ changeRouteTo maybeRoute model =
         Just Route.About ->
             Page.About.init
                 |> updateWith model About GotAboutMsg
-
-
-pageToRoute : Page -> Maybe Route
-pageToRoute page =
-    case page of
-        Home _ ->
-            Just Route.Home
-
-        About _ ->
-            Just Route.About
-
-        NotFound ->
-            Nothing
