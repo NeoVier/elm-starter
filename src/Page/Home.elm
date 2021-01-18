@@ -5,6 +5,7 @@ import Element.Background
 import Element.Border
 import Element.Font
 import Element.Input
+import Html
 import Route
 
 
@@ -62,6 +63,15 @@ view model device =
     }
 
 
+viewCode : String -> Element Msg
+viewCode code =
+    Element.paragraph
+        [ Element.Font.family [ Element.Font.monospace ]
+        , Element.Background.color <| Element.rgb255 234 234 234
+        ]
+        [ Element.text code ]
+
+
 viewSection : { title : String, body : List (Element Msg) } -> Element Msg
 viewSection { title, body } =
     (Element.paragraph [ Element.Font.bold, Element.padding 25, Element.Font.size 20 ]
@@ -100,8 +110,18 @@ messagesSection model =
     { title = "Using messages"
     , body =
         [ Element.paragraph []
-            [ Element.text "Each page has its own kind of Msg, and Main.elm has a type that encapsulates each Page Msg, to update the global (Main.elm's) model, along with the page model. "
-            , Element.text "Below is an example counter, to show the usage of Msg in pages:"
+            [ Element.text "Each page has its own kind of "
+            , viewCode "Msg"
+            , Element.text ", and "
+            , viewCode "Main.elm"
+            , Element.text " has a type that encapsulates each Page "
+            , viewCode "Msg"
+            , Element.text " to update the global ("
+            , viewCode "Main.elm"
+            , Element.text "'s) model, along with the page model. "
+            , Element.text "Below is an example counter, to show the usage of "
+            , viewCode "Msg"
+            , Element.text " in pages:"
             ]
         , Element.row
             [ Element.centerX
@@ -138,16 +158,40 @@ routingSection _ =
     { title = "Routing to other pages"
     , body =
         [ Element.paragraph []
-            [ Element.text "Routing to other pages in the application simply means changing the currPage in Main.Model, and, if necessary, executing the appropriate init method. "
+            [ Element.text "Routing to other pages in the application simply means changing the "
+            , viewCode "currPage"
+            , Element.text " in "
+            , viewCode "Main.Model"
+            , Element.text ", and, if necessary, executing the appropriate "
+            , viewCode "init"
+            , Element.text " method."
             ]
         , Element.paragraph []
-            [ Element.text "The Route module gives us a type-safe way of defining, parsing and selecting routes in an application. It defines every possible route in the Route type. Each Route should have a parser, and a routeToPieces implementation. This alone is enough for defining a new route." ]
+            [ Element.text "The "
+            , viewCode "Route"
+            , Element.text " module gives us a type-safe way of defining, parsing and selecting routes in an application. It defines every possible route in the "
+            , viewCode "Route"
+            , Element.text " type. Each "
+            , viewCode "Route"
+            , Element.text " should have a parser, and a "
+            , viewCode "routeToPieces"
+            , Element.text " implementation. This alone is enough for defining a new route."
+            ]
         , Element.paragraph []
-            [ Element.text "To change routes in the application, you should use Route.linkToRoute: it's the same as Element.link, but takes a Route instead of a url" ]
+            [ Element.text "To change routes in the application, you should use "
+            , viewCode "Route.linkToRoute"
+            , Element.text ": it's the same as "
+            , viewCode "Element.link"
+            , Element.text ", but takes a "
+            , viewCode "Route"
+            , Element.text " instead of a url"
+            ]
         , Element.paragraph []
             [ Element.text "So, for example, you could "
             , Route.linkToRoute [ Element.Font.underline ] { route = Route.About, label = Element.text "go to the about page" }
-            , Element.text " in a type-safe way. If some day you decide to change the url of the route, you just need to change that in the Route module."
+            , Element.text " in a type-safe way. If you ever decide to change the url of the route, you just need to change that in the "
+            , viewCode "Route"
+            , Element.text " module."
             ]
         ]
     }
@@ -161,12 +205,30 @@ responsivenessSection device _ =
             [ Element.text "As we use "
             , Element.newTabLink [ Element.Font.underline ]
                 { url = "https://package.elm-lang.org/packages/mdgriffith/elm-ui/latest/"
-                , label = Element.text "elm-ui"
+                , label = viewCode "elm-ui"
                 }
             , Element.text " for layout and styling, most things we make are already somewhat responsive. However, you may need to handle some special cases."
             ]
         , Element.paragraph []
-            [ Element.text "For that, the global model keeps an Element.Device field, which specifies the DeviceClass (Phone, Tablet, Desktop or BigDesktop), and Orientation (Portrait or Landscape)"
+            [ Element.text "For that, the global model keeps an "
+            , viewCode "Element.Device"
+            , Element.text " field, which specifies the "
+            , viewCode "DeviceClass"
+            , Element.text " ("
+            , viewCode "Phone"
+            , Element.text ", "
+            , viewCode "Tablet"
+            , Element.text ", "
+            , viewCode "Desktop"
+            , Element.text " or "
+            , viewCode "BigDesktop"
+            , Element.text "), and "
+            , viewCode "Orientation"
+            , Element.text " ("
+            , viewCode "Portrait"
+            , Element.text " or "
+            , viewCode "Landscape"
+            , Element.text ")"
             ]
         , Element.paragraph []
             [ Element.text <|

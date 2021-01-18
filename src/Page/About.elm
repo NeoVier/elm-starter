@@ -63,13 +63,15 @@ view model =
         , Element.paragraph [] [ Element.text "There isn't much here, it's just supposed to demonstrate routing, so here's a random fact to reward you:" ]
         , case model of
             Loading ->
-                Element.text "Loading"
+                Element.el [ Element.centerX, Element.paddingXY 0 20 ] <|
+                    Element.text "Loading"
 
             WithFact fact ->
                 viewFact fact
 
             Errored ->
-                Element.text "Something went wrong"
+                Element.el [ Element.centerX, Element.paddingXY 0 20 ] <|
+                    Element.text "Something went wrong"
         ]
     }
 
