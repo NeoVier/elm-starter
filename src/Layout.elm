@@ -28,6 +28,7 @@ view activeRoute document =
             , Element.column
                 [ Element.width maxWidth
                 , Element.padding 30
+                , Element.spacing 20
                 , Element.centerX
                 , Element.Region.mainContent
                 , Element.height Element.fill
