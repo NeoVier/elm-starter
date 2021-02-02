@@ -1,7 +1,6 @@
 module Main exposing (main)
 
 import Browser
-import Browser.Events
 import Browser.Navigation as Nav
 import Element exposing (Element)
 import Html
@@ -10,6 +9,7 @@ import Page.About
 import Page.Home
 import Page.NotFound
 import Route exposing (Route)
+import Shared exposing (Shared)
 import Url
 
 
@@ -24,23 +24,16 @@ type Page
 
 
 type alias Model =
-    { navKey : Nav.Key, currPage : Page, device : Element.Device }
+    { currPage : Page
+    , shared : Shared
+    }
 
 
-type alias Dimmensions =
-    { width : Int, height : Int }
-
-
-type alias Flags =
-    Dimmensions
-
-
-init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init flags url navKey =
+init : Shared.Dimmensions -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init dimmensions url navKey =
     changeRouteTo (Route.fromUrl url)
-        { navKey = navKey
-        , currPage = NotFound
-        , device = Element.classifyDevice flags
+        { currPage = NotFound
+        , shared = Shared.init dimmensions navKey
         }
 
 
@@ -51,7 +44,7 @@ init flags url navKey =
 type Msg
     = ChangedUrl Url.Url
     | RequestedUrl Browser.UrlRequest
-    | Resized Dimmensions
+    | GotSharedMsg Shared.Msg
     | GotHomeMsg Page.Home.Msg
     | GotAboutMsg Page.About.Msg
 
@@ -60,7 +53,7 @@ type Msg
 -- MAIN
 
 
-main : Program Flags Model Msg
+main : Program Shared.Dimmensions Model Msg
 main =
     Browser.application
         { init = init
@@ -85,13 +78,17 @@ update msg model =
         ( RequestedUrl request, _ ) ->
             case request of
                 Browser.Internal url ->
-                    ( model, Nav.pushUrl model.navKey (Url.toString url) )
+                    ( model, Nav.pushUrl model.shared.navKey (Url.toString url) )
 
                 Browser.External href ->
                     ( model, Nav.load href )
 
-        ( Resized dimm, _ ) ->
-            ( { model | device = Element.classifyDevice dimm }, Cmd.none )
+        ( GotSharedMsg subMsg, _ ) ->
+            let
+                ( newShared, newCmd ) =
+                    Shared.update subMsg model.shared
+            in
+            ( { model | shared = newShared }, Cmd.map GotSharedMsg newCmd )
 
         ( GotHomeMsg subMsg, Home subModel ) ->
             Page.Home.update subMsg subModel
@@ -160,10 +157,15 @@ view : Model -> Browser.Document Msg
 view model =
     case model.currPage of
         NotFound ->
-            viewStaticPage Nothing { title = "Not Found", body = [ Page.NotFound.view ] }
+            viewStaticPage Nothing
+                { title = "Not Found"
+                , body = [ Page.NotFound.view ]
+                }
 
         Home subModel ->
-            viewPage (Just Route.Home) (Page.Home.view subModel model.device) GotHomeMsg
+            viewPage (Just Route.Home)
+                (Page.Home.view subModel model.shared.device)
+                GotHomeMsg
 
         About subModel ->
             viewPage (Just Route.About) (Page.About.view subModel) GotAboutMsg
@@ -174,8 +176,9 @@ view model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Browser.Events.onResize (\w h -> Resized { width = w, height = h })
+subscriptions model =
+    Shared.subscriptions model.shared
+        |> Sub.map GotSharedMsg
 
 
 
